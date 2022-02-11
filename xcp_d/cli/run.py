@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-xcp_abcd preprocessing workflow
+xcp_d preprocessing workflow
 =====
 """
 
@@ -56,7 +56,7 @@ def get_parser():
     parser.add_argument('fmri_dir', action='store', type=Path,
                         help='the root folder of a preprocessed fMRI output .')
     parser.add_argument('output_dir', action='store', type=Path,
-                        help='the output path for the xcp_abcd')
+                        help='the output path for xcp_d')
 
 
     # optional arguments
@@ -91,29 +91,29 @@ def get_parser():
     g_perfm.add_argument("-v", "--verbose", dest="verbose_count", action="count", default=0,
                          help="increases log verbosity for each occurence, debug level is -vvv")
 
-    g_outputoption = parser.add_argument_group('fmriprep/nibabies are default')
+    g_outputoption = parser.add_argument_group('Input flags')
 
     g_outputoption.add_argument('--input-type', required=False, default='fmriprep',type=str,
                       choices=['fmirprep', 'dcan', 'hpc'],
-                       help='input type,fmriprep/nibabies are default,dcan and hcp are optional ')
+                       help='fMRIPprep/nibabies are default structures, DCAN and HCP are optional')
 
-    g_param = parser.add_argument_group('parameters for postprocessing')
+    g_param = parser.add_argument_group('Parameters for postprocessing')
 
     g_param.add_argument('--smoothing', default=6, action='store',
                              type=float, help='smoothing the postprocessed output (fwhm)')
     
     g_param.add_argument('--despike', action='store_true', default=False,
                         help='despike the nifti/cifti before postprocessing') 
-    g_param.add_argument('-p','--nuissance-regressors', required=False, default='27P', 
-                           choices=['27P', '36P', '24P', 'acompcor','tcompcor','aroma'],
+    g_param.add_argument('-p','--nuissance-regressors', required=False, default='36P', 
+                           choices=['27P', '36P', '24P', 'acompcor','aroma','acompcor_gsr','aroma_gsr'],
                              type=str, help='nuissance parameters to be selected, other options include 24P and 36P \
-                                           acompcor and tcompcor, see Ciric etal 2007')
+                                           acompcor and aroma, see Ciric etal 2007')
     g_param.add_argument('-c','--custom_conf', required=False,default=None,
                              type=Path, help='custom confound to be added to nuissance regressors')
     g_param.add_argument('-d','--dummytime',default=0,
                              type=float, help='first volume in seconds to be removed or skipped before postprocessing') 
     
-    g_filter = parser.add_argument_group('filtering parameters and default value')
+    g_filter = parser.add_argument_group('Filtering parameters and default value')
     
     g_filter.add_argument('--lower-bpf', action='store', default=0.009, type=float,
                         help='lower cut-off frequency (Hz) for the butterworth bandpass filter')
@@ -138,7 +138,7 @@ def get_parser():
     g_filter.add_argument( '--motion-filter-order',default=4,type=int,
                 help='number of filter coeffecients for the band-stop filter')
 
-    g_censor = parser.add_argument_group(' Censoring and scrubbing options')
+    g_censor = parser.add_argument_group('Censoring and scrubbing options')
     g_censor.add_argument('-r','--head_radius',default=50,
                              type=float, help='head radius for computing FD, deafult is 50mm, 35mm  is recommended for baby')
 

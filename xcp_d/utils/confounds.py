@@ -59,6 +59,10 @@ def load_WM_CSF(confoundspd):
     """select white matter and CSF nuissance."""
     return confoundspd[["csf","white_matter"]]
 
+def load_cosine(confoundspd):
+    """select cosine for compcor"""
+    return confoundspd[["cosine00","cosine01","cosine02","cosine03","cosine04","cosine05"]]
+
 def load_acompcor(confoundspd, confoundjs):
     """ select WM and GM acompcor separately."""
 
@@ -138,16 +142,32 @@ def load_confound_matrix(datafile,TR,filtertype,cutoff=0.1,order=4,
         cutoff=cutoff,freqband=freqband,order=order)
         mm_dev = pd.concat([motion,derivative(motion)],axis=1)
         acompc = load_acompcor(confoundspd=confoundtsv, confoundjs=confoundjson)
-        confound = pd.concat([mm_dev,acompc],axis=1)
-    elif params == 'tcompcor':
-        confound = load_tcompcor(confoundspd=confoundtsv,confoundjs=confoundjson)
+        cosine = load_cosine(confoundtsv)
+        confound = pd.concat([mm_dev,acompc,cosine],axis=1)
     elif params == 'aroma':
         wmcsf=load_WM_CSF(confoundtsv)
-        confound = load_aroma(datafile=datafile,wmcsf=wmcsf)
+        aroma = load_aroma(datafile=datafile)
+        pd.concat([wmcsf,aroma],axis=1)
+    elif params == 'aroma_gsr':
+        wmcsf=load_WM_CSF(confoundtsv)
+        aroma = load_aroma(datafile=datafile)
+        gs = load_globalS(confoundtsv)
+        pd.concat([wmcsf,aroma,gs],axis=1)
+    elif params == 'acompcor_gsr':
+        motion = load_motion(confoundtsv,TR,head_radius,filtertype,
+        cutoff=cutoff,freqband=freqband,order=order)
+        mm_dev = pd.concat([motion,derivative(motion)],axis=1)
+        acompc = load_acompcor(confoundspd=confoundtsv, confoundjs=confoundjson)
+        gs = load_globalS(confoundtsv)
+        cosine = load_cosine(confoundtsv)
+        confound = pd.concat([mm_dev,acompc,gs,cosine],axis=1)
+    elif params =='custom':
+        confound = pd.DataFrame() #for custom confounds with no other confounds
+        
         
     return confound
 
-def load_aroma(datafile,wmcsf):
+def load_aroma(datafile):
     """ extract aroma confound."""
     #_AROMAnoiseICs.csv
     #_desc-MELODIC_mixing.tsv
@@ -164,8 +184,7 @@ def load_aroma(datafile,wmcsf):
     aroma_noise =np.genfromtxt(aroma_noise,delimiter=',',)
     aroma_noise = [np.int(i) -1  for i in  aroma_noise] # change to 0-based index
     melodic = pd.read_csv(melodic_ts,header=None, delimiter="\t", encoding="utf-8")
-    melodic_drop = melodic.drop(aroma_noise, axis=1)
-    aroma = pd.concat([melodic_drop,wmcsf],axis=1) # add wmscf
+    aroma = melodic.drop(aroma_noise, axis=1)
 
     return aroma
 
