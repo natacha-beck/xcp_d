@@ -14,4 +14,4 @@ XCP-D picks up right where `fMRIprep <https://fmriprep.org>`_ ends, directly con
 
 .. image:: https://raw.githubusercontent.com/pennlinc/xcp_d/main/docs/_static/schematic_land-01.png
 
-See the `documentation <https://xcp-abcd.readthedocs.io/en>`_ for more details.
+See the `documentation <https://xcpengine.readthedocs.io/>`_ for more details.
